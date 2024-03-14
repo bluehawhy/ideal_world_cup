@@ -1,0 +1,24 @@
+{
+    "main":"_ideal_world_cup.jpg",
+    "menu":{
+        "dawa":"dawa.png",
+        "yebin":"yebin.png",
+        "momstouch":"momstouch.jpg",
+        "miss420":"miss420.png",
+        "southgate":"southgate.png",
+        "yoogane":"yoogane.png",
+        "hansot":"hansot.png",
+        "burgerking":"burgerking.jpg"
+    },
+    "menu_kor":{
+        "dawa":"다와푸드",
+        "yebin":"예빈",
+        "momstouch":"맘스터치",
+        "miss420":"미스사이공",
+        "southgate":"남문순대국밥",
+        "yoogane":"유가네",
+        "hansot":"한솥",
+        "burgerking":"버거킹"
+    },
+    "version":"v1.0"
+}
