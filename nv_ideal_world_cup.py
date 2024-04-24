@@ -1,17 +1,14 @@
 import sys, os
 import random
 
-
 from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QWidget, QPushButton, QLabel, QComboBox, QStackedWidget, QHBoxLayout, QMessageBox
 from PyQt5.QtGui import QPixmap, QIcon, QFont
 from PyQt5 import QtCore  # Import QtCore module
-from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtCore import pyqtSignal, QThread
 
-
-from _src import configus
+from _src import configus, firework
 
 config_path = 'static/config/config.json'
-
 config_data = configus.load_config(config_path)
 
 
@@ -32,7 +29,8 @@ def get_select_number_list(menu):
 
 def get_ramdom_menu(menu,number):
     # Select 4 random items from the dictionary
-    selected_items = random.sample(menu.items(), number)
+    selected_items = random.sample(list(menu.items()), number)
+
     ##print(dict(selected_items))
     return dict(selected_items)
 
@@ -52,33 +50,6 @@ class ImagePushButton(QPushButton):
     
     def emit_label_name(self):
         self.clicked_with_label.emit(self.label_name)  # Emit the label name when clicked
-'''
-class choice_menu(QWidget):
-    def __init__(self, two_menu):
-        super().__init__()
-        self.two_menu = two_menu
-
-        page2_layout = QHBoxLayout()  
-        self.setLayout(page2_layout)
-
-        image_button1_layout = QVBoxLayout()
-        image_button1 = ImagePushButton(os.path.join('static','img',config_data['menu'][two_menu[0]]), two_menu[0])
-        image_button1_layout.addWidget(image_button1)
-        label1 = QLabel(two_menu[0])  # Add label for button 1
-        label1.setAlignment(QtCore.Qt.AlignCenter)  # Align label centrally
-        label1.setFont(QFont("Lucida Console", 15))  # Set font for label 1
-        image_button1_layout.addWidget(label1)
-        page2_layout.addLayout(image_button1_layout)
-
-        image_button2_layout = QVBoxLayout()
-        image_button2 = ImagePushButton(os.path.join('static','img',config_data['menu'][two_menu[1]]), two_menu[1])
-        image_button2_layout.addWidget(image_button2)
-        label2 = QLabel(two_menu[1])  # Add label for button 2
-        label2.setAlignment(QtCore.Qt.AlignCenter)  # Align label centrally
-        label2.setFont(QFont("Lucida Console", 15))  # Set font for label 2
-        image_button2_layout.addWidget(label2)
-        page2_layout.addLayout(image_button2_layout)
-'''
 
 class choice_menu(QWidget):
     def __init__(self, two_menu):
@@ -106,6 +77,15 @@ class choice_menu(QWidget):
         self.image_button2_layout.addWidget(label2)
         page2_layout.addLayout(self.image_button2_layout)
 
+
+class FireworksThread(QThread):
+    finished_signal = pyqtSignal()
+
+    def run(self):
+        firework.show_fireworks_on_screen(1)
+        self.finished_signal.emit()
+
+
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -116,7 +96,7 @@ class MainWindow(QMainWindow):
         self.cnt_currunt_menu = 0
         
         self.selected_number = 0
-        self.setWindowTitle("Idea World Cup")
+        self.setWindowTitle("Idea World Cup v0.2")
         self.resize(800, 600)  # Set the size of the main window
 
         # Set window title font using style sheet
@@ -176,9 +156,29 @@ class MainWindow(QMainWindow):
         # Connect the signals from ImagePushButton to slots in MainWindow
         self.choice_menu_widget.image_button1.clicked_with_label.connect(self.handle_button_click)
         self.choice_menu_widget.image_button2.clicked_with_label.connect(self.handle_button_click)
+    
+    def show_winner_message(self, label_name):
+        winner_msg_box = QMessageBox()
+        winner_msg_box.setWindowTitle("Winner!!!!")
+        
+        label_img = QLabel()
+        pixmap = QPixmap(os.path.join('static', 'img', config_data['menu'][label_name]))
+        label_img.setPixmap(pixmap)
+        winner_msg_box.layout().addWidget(label_img)
+
+        winner_label = QLabel(config_data['menu_kor'][label_name])
+        winner_label.setFont(QFont("Lucida Console", 15))
+        winner_msg_box.layout().addWidget(winner_label)
+        
+        # Connect finished signal to quit application
+        winner_msg_box.finished.connect(self.quit_application)
+        winner_msg_box.exec_()
+
+
+    def quit_application(self):
+        QApplication.quit()
 
     def handle_button_click(self, label_name):
-        
         #print(f'handle_button_click / self.sorted_menu - {self.sorted_menu}')
         # Handle the button click event
         self.choiced_menu.append(label_name)
@@ -199,31 +199,8 @@ class MainWindow(QMainWindow):
                 #print(self.sorted_menu)
                 self.goto_choice_menu(self.sorted_menu)
             else:
-                msg_box = QMessageBox()
-                msg_box.setWindowTitle("Winner!!!!")
+                self.show_winner_message(self.choiced_menu[0])
                 
-                # Create a QLabel to display the image
-                label_img = QLabel()
-                pixmap = QPixmap(os.path.join('static', 'img', config_data['menu'][label_name]))  # Replace "path_to_image.jpg" with the actual path to your image
-                label_img.setPixmap(pixmap)
-                
-                # Add the QLabel to the QMessageBox layout
-                msg_box.layout().addWidget(label_img)
-
-                # add winner label
-                winner_label = QLabel(config_data['menu_kor'][label_name])
-                winner_label.setFont(QFont("Lucida Console", 15))
-                msg_box.layout().addWidget(winner_label)
-
-                # Show the QMessageBox
-                msg_box.exec_()
-
-
-        
-
-        
-
-
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     main_window = MainWindow()

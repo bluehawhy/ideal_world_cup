@@ -8,7 +8,10 @@
         "southgate":"southgate.png",
         "yoogane":"yoogane.png",
         "hansot":"hansot.png",
-        "burgerking":"burgerking.jpg"
+        "burgerking":"burgerking.jpg",
+        "kind gas":"chaghan_gas.png",
+        "jin rumored knife noodle":"jin_rumored_knife_noodle.png",
+        "waterside best pork soup":"waterside_best_pork_soup.png"
     },
     "menu_kor":{
         "dawa":"다와푸드",
@@ -18,7 +21,10 @@
         "southgate":"남문순대국밥",
         "yoogane":"유가네",
         "hansot":"한솥",
-        "burgerking":"버거킹"
+        "burgerking":"버거킹",
+        "kind gas":"착한까스",
+        "jin rumored knife noodle":"진소문난 칼국수",
+        "waterside best pork soup":"수최국"
     },
     "version":"v1.0"
 }
